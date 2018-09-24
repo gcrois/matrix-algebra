@@ -8,6 +8,8 @@ class Matrix:
         self.col = len(array[0])
         self.arr = array
         self.hom = self.row == self.col
+        m = self.arr
+        self.trn = [[m[j][i] for j in range(len(m))] for i in range(len(m[0]))]
         for i in array:
             if len(i) != self.row:
                 raise TypeError("Length of rows do not match.")
@@ -38,13 +40,12 @@ class Matrix:
                 print("DONE")
             return q
         return split(self.arr)
-    def trn(self):
-        m = self.arr
-        m = [[m[j][i] for j in range(len(m))] for i in range(len(m[0]))]
-        self.__init__(m)
+
 
 x = Matrix([[4,6],[3,8]])
 y = Matrix([[1,4,2.2,3],[0,1,4,4],[-1,0,1,0],[2,0,4,1]])
 print(x)
-x.trn()
-print(x)
+print(x.trn)
+
+print(y)
+print(Matrix(y.trn))
