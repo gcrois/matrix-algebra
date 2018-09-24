@@ -11,8 +11,9 @@ class Matrix:
         m = self.arr
         self.trn = [[m[j][i] for j in range(len(m))] for i in range(len(m[0]))]
         for i in array:
-            if len(i) != self.row:
+            if len(i) != self.col:
                 raise TypeError("Length of rows do not match.")
+
     def __repr__(self):
         o = ""
         for i in range(0,len(self.arr)):
@@ -20,6 +21,7 @@ class Matrix:
             if i != self.row-1:
                 o += "\n"
         return o
+
     def det(self):
         if not self.hom:
             raise TypeError("Must be a square matrix")
@@ -32,20 +34,79 @@ class Matrix:
             for column in range(0,len(m)):
                 sign = (((column + 1) % 2) * 2) - 1 #makes every other term negative
                 n = deepcopy(m)
-                print(n[0][column])
                 for k in n[1:]:
                     del k[column]
-                    print(k)
                 q += (m[0][column] * split(n[1:]) * sign)
-                print("DONE")
             return q
         return split(self.arr)
 
+    def inv(self):
+        if not self.hom:
+            raise TypeError("Must be a square matrix")
 
-x = Matrix([[4,6],[3,8]])
-y = Matrix([[1,4,2.2,3],[0,1,4,4],[-1,0,1,0],[2,0,4,1]])
-print(x)
-print(x.trn)
+        def cross(m):
+            return (m[0][0]*m[1][1])-(m[0][1]*m[1][0])
 
-print(y)
-print(Matrix(y.trn))
+        def minor(m):
+            o = []
+            q = deepcopy(m)
+            for row in range(len(m)):
+                k = []
+                for column in range(len(m)):
+                    n = deepcopy(m)
+                    del n[row]
+                    for i in range(len(n)):
+                        del n[i][column]
+                    k += [det(n)]
+                o += [k]
+            return o
+
+        def cofactors(x):
+            o = []
+            for i in range(x):
+                q = []
+                k = i % 2
+                for j in range(x):
+                    q += [(((k + 1) % 2) * 2) - 1]
+                    k += 1
+                o += [q]
+            return o
+
+        def sign(m):
+            s = cofactors(len(m[0]))
+            for r in range(len(m)):
+                for c in range(len(m)):
+                    m[r][c] = m[r][c] * s[r][c]
+            print(m)
+            return m
+
+        def adj(m):
+            o = [[m[j][i] for j in range(len(m))] for i in range(len(m[0]))]
+            return o
+
+        def det(m):
+            return Matrix(m).det()
+
+        def mul(m, d):
+            for r in range(len(m)):
+                for c in range(len(m)):
+                    m[r][c] = m[r][c] * d
+            return m
+
+        if len(self.arr[0]) == 2:
+            m = deepcopy(self.arr)
+            m[0][0], m[1][1] = m[1][1], m[0][0]
+            return mul(sign(m),1/det(self.arr))
+
+        return Matrix(mul(adj(sign(minor(self.arr))),1/det(self.arr)))
+
+
+
+
+
+
+x = Matrix([[4,7],[2,6]])
+y = Matrix([[8,9,4,13,6],[10,12,11,14,15],[2,5,16,17,18],[19,7,20,21,3],[22,23,24,25,26]])
+
+#print(y.inv())
+print(y.inv())
