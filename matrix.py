@@ -22,6 +22,30 @@ class Matrix:
                 o += "\n"
         return o
 
+    def __mul__(self, other):
+        if isinstance(other, Matrix):
+            if self.row != other.col:
+                raise TypeError("Dimension mismatch")
+            m = []
+            for q in range(self.row):
+                n = []
+                for r in range(self.row):
+                    t = 0
+                    for c in range(self.col):
+                        t += self.arr[q][c] * other.arr[c][r]
+                    n += [t]
+                m += [n]
+            return Matrix(m)
+        if isinstance(other, str):
+            raise TypeError("Cannot multiply string")
+        else:
+            m = deepcopy(self.arr)
+            for r in range(self.row):
+                for c in range(self.col):
+                    m[r][c] = m[r][c] * other
+            return m
+
+
     def det(self):
         if not self.hom:
             raise TypeError("Must be a square matrix")
@@ -77,7 +101,6 @@ class Matrix:
             for r in range(len(m)):
                 for c in range(len(m)):
                     m[r][c] = m[r][c] * s[r][c]
-            print(m)
             return m
 
         def adj(m):
@@ -105,8 +128,8 @@ class Matrix:
 
 
 
-x = Matrix([[4,7],[2,6]])
-y = Matrix([[8,9,4,13,6],[10,12,11,14,15],[2,5,16,17,18],[19,7,20,21,3],[22,23,24,25,26]])
+x = Matrix([[0,-1,2],[4,11,2]])
+y = Matrix([[3,-1],[1,2],[6,1]])
 
 #print(y.inv())
-print(y.inv())
+print(x * 3)
