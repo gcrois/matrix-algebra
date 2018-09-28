@@ -15,6 +15,9 @@ class Matrix:
                 raise TypeError("Length of rows do not match.")
 
     def __repr__(self):
+        return str(self.arr)
+
+    def __str__(self):
         o = ""
         for i in range(0,len(self.arr)):
             o += str(self.arr[i])
@@ -22,19 +25,31 @@ class Matrix:
                 o += "\n"
         return o
 
-    def __mul__(self, other):
+    def __truediv__(self, other):
         if isinstance(other, Matrix):
-            if self.row != other.col:
+            return self.__mul__(other.inv())
+        else:
+            m = deepcopy(self.arr)
+            for r in range(self.row):
+                for c in range(self.col):
+                    m[r][c] = m[r][c] * 1 / other
+            return m
+
+    def __mul__(self, other):
+        def dot(m, n):
+            o = 0
+            for i in range(len(m)):
+                o += m[i] * n[i]
+            return o
+        if isinstance(other, Matrix):
+            if self.col != other.row:
                 raise TypeError("Dimension mismatch")
             m = []
-            for q in range(self.row):
-                n = []
-                for r in range(self.row):
-                    t = 0
-                    for c in range(self.col):
-                        t += self.arr[q][c] * other.arr[c][r]
-                    n += [t]
-                m += [n]
+            for r in range(self.row):
+                t = []
+                for c in range(other.col):
+                    t += [dot(self.arr[r], other.trn[c])]
+                m += [t]
             return Matrix(m)
         if isinstance(other, str):
             raise TypeError("Cannot multiply string")
@@ -45,12 +60,23 @@ class Matrix:
                     m[r][c] = m[r][c] * other
             return m
 
+        def __pow__(self, other):
+            if isinstance(other, int):
+                for _ in range(int):
+                    o = self.array * self.array
+                return o
+            else:
+                raise TypeError("Can only raise to integer")
+
+
 
     def det(self):
         if not self.hom:
             raise TypeError("Must be a square matrix")
+
         def cross(m):
             return (m[0][0]*m[1][1])-(m[0][1]*m[1][0])
+
         def split(m):
             q = 0
             if len(m) == 2:
@@ -121,15 +147,17 @@ class Matrix:
             m[0][0], m[1][1] = m[1][1], m[0][0]
             return mul(sign(m),1/det(self.arr))
 
-        return Matrix(mul(adj(sign(minor(self.arr))),1/det(self.arr)))
+        o = mul(adj(sign(minor(self.arr))),1/det(self.arr))
+
+        return Matrix(o)
 
 
 
 
 
 
-x = Matrix([[0,-1,2],[4,11,2]])
-y = Matrix([[3,-1],[1,2],[6,1]])
+x = Matrix([[1,2],[3,4]])
+y = Matrix([[2,0],[1,2]])
+j = Matrix(x.inv())
 
 #print(y.inv())
-print(x * 3)
